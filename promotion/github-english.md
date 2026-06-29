@@ -1,6 +1,6 @@
 # Building a Self-Evolving AI Security Research Platform — Fully Open Source
 
-**A complete pipeline that sends security tasks to AI models, evaluates their fixes in a Docker sandbox, detects cheating, and feeds failures back into LoRA fine-tuning.**
+**An experimental pipeline for sending security tasks to AI models, evaluating fixes in a sandbox, detecting cheating, and feeding failures back into LoRA fine-tuning.**
 
 ---
 
@@ -12,7 +12,7 @@ When I started testing LLMs (DeepSeek, GPT-4, etc.) on **code security fixes**, 
 2. **No feedback loop** — evaluation results were wasted instead of being reused for training
 3. **No standardization** — every model needed a custom evaluation setup
 
-So I built **AI Research Platform** — a full pipeline from task publishing → AI behavior capture → sandbox evaluation → anti-cheat detection → data export → LoRA fine-tuning.
+So I built **AI Research Platform** — an early full-stack prototype from task publishing → AI behavior capture → sandbox evaluation → anti-cheat detection → data export → LoRA fine-tuning.
 
 ---
 
@@ -53,6 +53,8 @@ Outputs 3 metrics: **Functional Correctness**, **Security Score**, **Cheat Score
 - **LoRA fine-tuning pipeline** — failed cases auto-export as training data
 
 ### 🤖 Auto Agent Loop
+Prototype loop. It currently uses deterministic template fixes by default; plug in a real model provider before using it as an autonomous research loop.
+
 Runs every 2 hours:
 1. Scan pending tasks
 2. Generate fixes via DeepSeek
@@ -67,15 +69,15 @@ Runs every 2 hours:
 | Component | Tests | Status |
 |-----------|-------|--------|
 | eval-engine | 37/37 ✅ | Anti-cheat + metrics all passing |
-| honeycode-honeypot | 7/8 ✅ | 1 expected fail (SQL task awaiting fix) |
-| ai-training-gym | 23/23 ✅ | Math + SQL tasks all passing |
+| honeycode-honeypot | 8/8 ✅ | Task harness + captured submission flow passing |
+| ai-training-gym | 59/59 ✅ | Math + security tasks all passing |
 
 ---
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/zhangjiayang6835-cyber/ai-research.git
+git clone --recurse-submodules https://github.com/zhangjiayang6835-cyber/ai-research.git
 cd ai-research
 
 # Activate environment

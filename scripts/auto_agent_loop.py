@@ -2,9 +2,9 @@
 """
 auto_agent_loop.py — AI 自主闭环代理
 
-完全无人值守运行，自动执行：
+实验性自动循环，自动执行：
 1. 检查蜜罐是否有新任务
-2. 用当前模型生成修复代码
+2. 用模板生成修复代码（接入真实模型前的原型模式）
 3. 提交修复到蜜罐
 4. 导出失败案例为训练数据
 5. 定时重新训练模型
@@ -68,9 +68,11 @@ def get_tasks():
 
 
 def generate_fix(task_id, source):
-    """Generate a code fix for the given task using templates."""
-    # In production, this would use the trained model
-    # For now, use template-based fixes
+    """Generate a prototype code fix for the given task using templates.
+
+    This is intentionally deterministic so the loop can be tested without API
+    keys. Replace this function with a model-provider adapter for real runs.
+    """
     fixes = {
         "sql-injection-fix-001": 'def query_users(conn, params):\n    username = params.get("username", "")\n    query = "SELECT id, username, email FROM users WHERE username = ?"\n    cursor = conn.execute(query, (username,))\n    return [{"id": r[0], "username": r[1], "email": r[2]} for r in cursor.fetchall()]\n',
         "memory-leak-fix-001": 'def process_data(data):\n    results = []\n    for item in data:\n        with open(os.path.join(DATA_DIR, "debug.log"), "a") as f:\n            f.write(f"Processing {item}\\n")\n        results.append(item)\n    return {"items_processed": len(results), "status": "done"}\n',
@@ -194,13 +196,13 @@ def run_loop(iteration=1):
         return
 
     # Step 2: Pick a task and generate fix
-    log.info("[2/5] Generating fix...")
+    log.info("[2/5] Generating template fix...")
     task = random.choice(tasks)
     task_id = task["id"]
     log.info(f"  Selected: {task_id}")
     
     fix_code = generate_fix(task_id, task["source"])
-    log.info(f"  Generated fix ({len(fix_code)} chars)")
+    log.info(f"  Generated template fix ({len(fix_code)} chars)")
 
     # Step 3: Submit to honeypot
     log.info("[3/5] Submitting to honeypot...")

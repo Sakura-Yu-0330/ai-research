@@ -19,9 +19,9 @@
 
 | 组件 | 徽章 | 一句话定位 |
 |------|------|-----------|
-| [🍯 honeycode-honeypot](./honeycode-honeypot/) | [![Tests](https://img.shields.io/badge/tests-7%2F8-green)]() | **蜜罐系统** — 发布安全任务，捕获 AI 代码修复行为 |
+| [🍯 honeycode-honeypot](./honeycode-honeypot/) | [![Tests](https://img.shields.io/badge/tests-8%2F8-green)]() | **蜜罐系统** — 发布安全任务，捕获 AI 代码修复行为 |
 | [📊 eval-engine](./eval-engine/) | [![Tests](https://img.shields.io/badge/tests-37%2F37-green)]() | **评测引擎** — Docker 沙箱执行 + 6 种作弊检测 |
-| [🏋️ ai-training-gym](./ai-training-gym/) | [![Tests](https://img.shields.io/badge/tests-23%2F23-green)]() | **训练场** — 标准数据集格式 + LoRA 微调流水线 |
+| [🏋️ ai-training-gym](./ai-training-gym/) | [![Tests](https://img.shields.io/badge/tests-59%2F59-green)]() | **训练场** — 标准数据集格式 + LoRA 微调流水线 |
 
 ---
 
@@ -82,7 +82,7 @@
                     ⑥ 微调模型 ──→ ⑦ 新一轮评测
 ```
 
-这是一个**自进化闭环**：每次评测的失败案例都可导出为训练数据，用于下一轮模型微调，形成持续改进的飞轮。
+这是一个**自进化闭环原型**：每次评测的失败案例都可导出为训练数据，用于下一轮模型微调。当前自动 Agent 使用模板生成修复代码，接入真实模型 API 后才构成完整无人值守闭环。
 
 ---
 
@@ -91,8 +91,14 @@
 ### 克隆仓库
 
 ```bash
-git clone https://github.com/zhangjiayang6835-cyber/ai-research.git
+git clone --recurse-submodules https://github.com/zhangjiayang6835-cyber/ai-research.git
 cd ai-research
+```
+
+如果已经普通克隆过，请补拉子模块：
+
+```bash
+git submodule update --init --recursive
 ```
 
 ### 环境准备
@@ -113,7 +119,7 @@ cd eval-engine && pytest tests/ -v
 # 蜜罐任务测试（8 项）
 cd ../honeycode-honeypot && pytest tasks/ -v
 
-# 训练场测试（23 项）
+# 训练场测试（59 项）
 cd ../ai-training-gym && pytest tasks/ -v
 ```
 
@@ -133,7 +139,7 @@ docker build -t eval-sandbox:latest .
 | [🍯 honeycode-honeypot](./honeycode-honeypot/) | `honeycode-honeypot/` | 蜜罐系统：任务发布、提交捕获、自动评分、排行榜 |
 | [📊 eval-engine](./eval-engine/) | `eval-engine/` | 评测引擎：Docker 沙箱、作弊检测、指标计算、报告 |
 | [🏋️ ai-training-gym](./ai-training-gym/) | `ai-training-gym/` | 训练场：数据生成、LoRA 微调、标准评测框架 |
-| [🤖 自动 Agent](./scripts/auto_agent_loop.py) | `scripts/` | 每 2 小时自动循环：发现任务 → 生成修复 → 评测 → 导出 |
+| [🤖 自动 Agent](./scripts/auto_agent_loop.py) | `scripts/` | 原型循环：发现任务 → 模板生成修复 → 评测 → 导出 |
 
 ---
 
